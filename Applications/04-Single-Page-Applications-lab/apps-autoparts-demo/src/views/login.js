@@ -1,29 +1,21 @@
-document.querySelector('#login form').addEventListener('submit', onLogin);
+import { post } from '../data/api.js';
+import { navTo } from '../nav.js';
+import { createSubmitHandler, setUserData } from '../util.js';
 
-async function onLogin(event) {
-    event.preventDefault();
+const section = document.getElementById('login');
 
-    const formData = new FormData(event.target);
-    const email = formData.get('email');
-    const password = formData.get('password');
+section.querySelector('form').addEventListener('submit', createSubmitHandler(onLogin));
 
-    const response = await fetch('http://localhost:3030/users/login', {
-        method: 'post',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
-    });
+export function showLogin() {
+    return section;
+}
 
-    if (!response.ok) {
-        const error = await response.json();
-        return alert('Error signing in:\n' + error.message);
-    }
+async function onLogin({ email, password }, form) {
+    const userData = await post('/users/login', { email, password });
 
-    const userData = await response.json();
+    setUserData(userData);
 
-    localStorage.userId = userData._id;
-    localStorage.accessToken = userData.accessToken;
+    form.reset();
 
-    window.location = '/';
+    navTo('catalog-nav');
 }

@@ -1,29 +1,26 @@
-import { showView } from '../nav.js';
-import { startDetails } from './details.js';
+import { get } from '../data/api.js';
+import { navTo } from '../nav.js';
 
-export function startCatalog() {
-    const list = document.getElementById('parts');
+const section = document.getElementById('catalog');
+
+export function showCatalog() {
+    const list = section.querySelector('#parts');
     list.innerHTML = 'Loading &hellip;';
 
     loadParts();
+
+    return section;
 }
 
 async function loadParts() {
-    const response = await fetch('http://localhost:3030/data/autoparts');
-
-    if (!response.ok) {
-        return alert('Error loading catalog');
-    }
-
-    const parts = await response.json();
-
+    const parts = await get('/data/autoparts');
     showParts(parts);
 }
 
 function showParts(parts) {
     const elements = parts.map(createPartPreview);
 
-    const list = document.getElementById('parts');
+    const list = section.querySelector('#parts');
 
     list.replaceChildren(...elements);
 }
@@ -35,7 +32,7 @@ function createPartPreview(partData) {
 
     element.querySelector('a').addEventListener('click', (event) => {
         event.preventDefault();
-        showView('details', startDetails, partData._id);
+        navTo('details-link', partData._id);
     });
 
     return element;

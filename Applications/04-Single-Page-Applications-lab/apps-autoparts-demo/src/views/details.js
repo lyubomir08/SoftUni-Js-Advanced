@@ -1,25 +1,24 @@
-export function startDetails(partId) {
-    document.querySelector('#details h2').innerHTML = 'Loading &hellip;';
-    document.querySelector('#details .subtitle').innerHTML = 'Loading &hellip;';
-    document.querySelector('#details .description').innerHTML = 'Loading &hellip;';
+import { get } from '../data/api.js';
+
+const section = document.getElementById('details');
+
+export function showDetails(partId) {
+    section.querySelector('#details h2').innerHTML = 'Loading &hellip;';
+    section.querySelector('#details .subtitle').innerHTML = 'Loading &hellip;';
+    section.querySelector('#details .description').innerHTML = 'Loading &hellip;';
 
     loadDetails(partId);
+
+    return section;
 }
 
 async function loadDetails(partId) {
-    const response = await fetch('http://localhost:3030/data/autoparts/' + partId);
-
-    if (!response.ok) {
-        return alert('Error loading part details');
-    }
-
-    const data = await response.json();
-
-    showDetails(data);
+    const data = await get('/data/autoparts/' + partId);
+    displayDetails(data);
 }
 
-function showDetails(data) {
-    document.querySelector('#details h2').textContent = data.label;
-    document.querySelector('#details .subtitle').innerHTML = `<span class="price">$${data.price}</span> | <span class="stock">${data.qty} in stock</span>`;
-    document.querySelector('#details .description').textContent = data.description;
+function displayDetails(data) {
+    section.querySelector('#details h2').textContent = data.label;
+    section.querySelector('#details .subtitle').innerHTML = `<span class="price">$${data.price}</span> | <span class="stock">${data.qty} in stock</span>`;
+    section.querySelector('#details .description').textContent = data.description;
 }

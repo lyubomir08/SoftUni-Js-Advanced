@@ -1,8 +1,23 @@
-export function showView(sectionId, callback, param) {
-    document.querySelectorAll('section').forEach(s => s.style.display = 'none');
-    document.getElementById(sectionId).style.display = 'block';
+const main = document.querySelector('main');
 
-    if (callback) {
-        callback(param);
+let views = {};
+
+export function initNavigation(routingTable) {
+    views = routingTable;
+
+    for (let linkId in views) {
+        document.getElementById(linkId)?.addEventListener('click', (event) => {
+            event.preventDefault();
+            navTo(linkId);
+        });
+    }
+}
+
+export function navTo(linkId, param) {
+    const view = views[linkId];
+
+    if (view) {
+        const section = view(param);
+        main.replaceChildren(section);
     }
 }
