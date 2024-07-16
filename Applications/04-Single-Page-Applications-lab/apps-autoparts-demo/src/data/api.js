@@ -1,4 +1,4 @@
-import { getUserData } from '../util.js';
+import { clearUserData, getUserData } from '../util.js';
 
 const hostname = 'http://localhost:3030';
 
@@ -27,8 +27,7 @@ export async function request(method, url, data) {
             const error = await response.json();
 
             if (response.status == 403 && error.message == 'Invalid access token') {
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('userId');
+                clearUserData();
             }
 
             throw new Error(error.message);

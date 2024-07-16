@@ -1,3 +1,5 @@
+import { render } from '../node_modules/lit-html/lit-html.js';
+
 export function createSubmitHandler(callback) {
     return function (event) {
         event.preventDefault();
@@ -19,4 +21,10 @@ export function getUserData() {
 
 export function clearUserData() {
     localStorage.removeItem('userData');
+}
+
+const main = document.querySelector('main');
+
+export function showSection(section) {
+    render(section, main);
 }

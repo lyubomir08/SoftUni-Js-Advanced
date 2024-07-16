@@ -1,21 +1,29 @@
+import { html } from '../../node_modules/lit-html/lit-html.js';
+
 import { post } from '../data/api.js';
-import { navTo } from '../nav.js';
-import { createSubmitHandler, setUserData } from '../util.js';
+import { createSubmitHandler, setUserData, showSection } from '../util.js';
 
-const section = document.getElementById('login');
+const section = (onSubmit) => html`
+<section id="login">
+    <h1>Login</h1>
+    <form @submit=${onSubmit}>
+        <label>Email: <input type="text" name="email"></label>
+        <label>Password: <input type="password" name="password"></label>
+        <button>Sign In</button>
+        <p>Don't have an account? <a id="register-link" href="/register">Register here</a></p>
+    </form>
+</section>`;
 
-section.querySelector('form').addEventListener('submit', createSubmitHandler(onLogin));
+export function showLogin(ctx) {
+    showSection(section(createSubmitHandler(onLogin)));
 
-export function showLogin() {
-    return section;
-}
+    async function onLogin({ email, password }, form) {
+        const userData = await post('/users/login', { email, password });
 
-async function onLogin({ email, password }, form) {
-    const userData = await post('/users/login', { email, password });
+        setUserData(userData);
 
-    setUserData(userData);
+        form.reset();
 
-    form.reset();
-
-    navTo('catalog-nav');
+        ctx.page.redirect('/catalog');
+    }
 }

@@ -1,39 +1,23 @@
+import { html } from '../../node_modules/lit-html/lit-html.js';
+
 import { get } from '../data/api.js';
-import { navTo } from '../nav.js';
+import { showSection } from '../util.js';
 
-const section = document.getElementById('catalog');
+const section = (parts) => html`
+<section id="catalog">
+    <h1>Parts Catalog</h1>
+    <ul id="parts">
+        ${parts?.map(partTemplate) || html`<p>Loading &hellip;</p>`}  
+    </ul>
+</section>`;
 
-export function showCatalog() {
-    const list = section.querySelector('#parts');
-    list.innerHTML = 'Loading &hellip;';
+const partTemplate = (partData) => html`
+<li><a id=${partData._id} href="/catalog/${partData._id}">${partData.label} - $${partData.price}</a></li>`;
 
-    loadParts();
+export async function showCatalog() {
+    showSection(section());
 
-    return section;
-}
-
-async function loadParts() {
     const parts = await get('/data/autoparts');
-    showParts(parts);
-}
 
-function showParts(parts) {
-    const elements = parts.map(createPartPreview);
-
-    const list = section.querySelector('#parts');
-
-    list.replaceChildren(...elements);
-}
-
-function createPartPreview(partData) {
-    const element = document.createElement('li');
-
-    element.innerHTML = `<a id=${partData._id} href="/catalog/${partData._id}">${partData.label} - $${partData.price}</a>`;
-
-    element.querySelector('a').addEventListener('click', (event) => {
-        event.preventDefault();
-        navTo('details-link', partData._id);
-    });
-
-    return element;
+    showSection(section(parts));
 }

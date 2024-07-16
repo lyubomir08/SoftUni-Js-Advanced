@@ -1,29 +1,38 @@
+import { html } from '../../node_modules/lit-html/lit-html.js';
+
 import { post } from '../data/api.js';
-import { navTo } from '../nav.js';
-import { createSubmitHandler, setUserData } from '../util.js';
+import { createSubmitHandler, setUserData, showSection } from '../util.js';
 
-const section = document.getElementById('register');
+const section = (onSubmit) => html`
+<section id="register">
+    <h1>Register</h1>
+    <form @submit=${onSubmit}>
+        <label>Email: <input type="text" name="email"></label>
+        <label>Password: <input type="password" name="password"></label>
+        <label>Repeat: <input type="password" name="repass"></label>
+        <button>Sign Up</button>
+        <p>Already have an account? <a id="login-link" href="/login">Login here</a></p>
+    </form>
+</section>`;
 
-section.querySelector('form').addEventListener('submit', createSubmitHandler(onRegister));
+export function showRegister(ctx) {
+    showSection(section(createSubmitHandler(onRegister)));
 
-export function showRegister() {
-    return section;
-}
-
-async function onRegister({ email, password, repass }, form) {
-    if (!email || !password) {
-        return alert('All fields are required!');
+    async function onRegister({ email, password, repass }, form) {
+        if (!email || !password) {
+            return alert('All fields are required!');
+        }
+    
+        if (password != repass) {
+            return alert('Passwords don\'t match!');
+        }
+    
+        const userData = await post('/users/register', { email, password });
+    
+        setUserData(userData);
+    
+        form.reset();
+    
+        ctx.page.redirect('/catalog');
     }
-
-    if (password != repass) {
-        return alert('Passwords don\'t match!');
-    }
-
-    const userData = await post('/users/register', { email, password });
-
-    setUserData(userData);
-
-    form.reset();
-
-    navTo('catalog-nav');
 }

@@ -1,24 +1,22 @@
+import { html } from '../../node_modules/lit-html/lit-html.js';
+
 import { get } from '../data/api.js';
+import { showSection } from '../util.js';
 
-const section = document.getElementById('details');
+const section = (data) => html`
+<section id="details">
+        <h1>Part Details</h1>
+        <h2>${data?.label || html`Loading &hellip;`}</h2> <!-- Part label -->
+        <p class="subtitle">${data ? `$${data.price} | ${data.qty} in stock` : html`Loading &hellip;`}</p> <!-- Part price and quantity in stock -->
+        <p class="description">${data?.description || html`Loading &hellip;`}</p> <!-- Part description -->
+    </section>`;
 
-export function showDetails(partId) {
-    section.querySelector('#details h2').innerHTML = 'Loading &hellip;';
-    section.querySelector('#details .subtitle').innerHTML = 'Loading &hellip;';
-    section.querySelector('#details .description').innerHTML = 'Loading &hellip;';
+export async function showDetails(ctx) {
+    const partId = ctx?.params?.id;
 
-    loadDetails(partId);
+    showSection(section());
 
-    return section;
-}
-
-async function loadDetails(partId) {
     const data = await get('/data/autoparts/' + partId);
-    displayDetails(data);
-}
 
-function displayDetails(data) {
-    section.querySelector('#details h2').textContent = data.label;
-    section.querySelector('#details .subtitle').innerHTML = `<span class="price">$${data.price}</span> | <span class="stock">${data.qty} in stock</span>`;
-    section.querySelector('#details .description').textContent = data.description;
+    showSection(section(data));
 }
