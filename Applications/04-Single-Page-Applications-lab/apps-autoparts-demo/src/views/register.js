@@ -1,7 +1,7 @@
 import { html } from '../../node_modules/lit-html/lit-html.js';
 
 import { post } from '../data/api.js';
-import { createSubmitHandler, setUserData, showSection } from '../util.js';
+import { createSubmitHandler, setUserData, showSection, updateUserNav } from '../util.js';
 
 const section = (onSubmit) => html`
 <section id="register">
@@ -22,17 +22,18 @@ export function showRegister(ctx) {
         if (!email || !password) {
             return alert('All fields are required!');
         }
-    
+
         if (password != repass) {
             return alert('Passwords don\'t match!');
         }
-    
+
         const userData = await post('/users/register', { email, password });
-    
+
         setUserData(userData);
-    
+
         form.reset();
-    
+
+        updateUserNav();
         ctx.page.redirect('/catalog');
     }
 }

@@ -1,7 +1,7 @@
 import { html } from '../../node_modules/lit-html/lit-html.js';
 
 import { post } from '../data/api.js';
-import { createSubmitHandler, setUserData, showSection } from '../util.js';
+import { createSubmitHandler, setUserData, showSection, updateUserNav } from '../util.js';
 
 const section = (onSubmit) => html`
 <section id="login">
@@ -24,6 +24,7 @@ export function showLogin(ctx) {
 
         form.reset();
 
+        updateUserNav();
         ctx.page.redirect('/catalog');
     }
 }
